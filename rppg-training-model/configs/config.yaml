@@ -1,0 +1,30 @@
+model:
+  type: "CNN"
+  input_shape: [1, 300, 300]  # Example input shape for rPPG data
+  num_classes: 1  # Regression task for heart rate prediction
+  dropout_rate: 0.5
+
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  num_epochs: 50
+  early_stopping:
+    patience: 5
+    min_delta: 0.01
+
+data:
+  raw_data_path: "data/raw/ubfc_rppg/"
+  processed_data_path: "data/processed/"
+  train_split_path: "data/splits/train.csv"
+  val_split_path: "data/splits/val.csv"
+  test_split_path: "data/splits/test.csv"
+
+logging:
+  log_dir: "logs/"
+  log_level: "INFO"
+
+checkpoints:
+  checkpoint_dir: "checkpoints/"
+  save_best_only: true
+
+seed: 42

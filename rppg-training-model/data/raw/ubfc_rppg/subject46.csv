@@ -1,0 +1,16 @@
+# This file contains the raw rPPG data for subject 46, which will be used for training the model.
+# The contents of this file should be filled with the actual rPPG data in CSV format.
+# Please replace the placeholder data below with the actual data.
+
+timestamp,heart_rate,signal_quality
+2023-01-01 00:00:00,75,85
+2023-01-01 00:00:01,76,87
+2023-01-01 00:00:02,74,90
+2023-01-01 00:00:03,75,88
+2023-01-01 00:00:04,77,86
+2023-01-01 00:00:05,78,84
+2023-01-01 00:00:06,76,89
+2023-01-01 00:00:07,75,91
+2023-01-01 00:00:08,74,90
+2023-01-01 00:00:09,73,92
+...

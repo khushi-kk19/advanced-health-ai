@@ -1,0 +1,5 @@
+# filepath: rppg-training-model/rppg-training-model/data/splits/test.csv
+subject,heart_rate,signal_quality
+subject41,75.0,85
+subject42,72.5,90
+subject46,78.0,80

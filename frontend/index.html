@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Health AI - Stress Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+            --text: #374151;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: var(--dark);
+        }
+
+        header p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.healthy {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .result-box {
+            background: var(--light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 16px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .stress-indicator {
+            width: 100%;
+            height: 20px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .stress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .model-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .model-option {
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .model-option:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .model-option.selected {
+            border-color: var(--primary);
+            background: #dbeafe;
+            color: var(--primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            background: var(--light);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .history-table th {
+            background: var(--light);
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .history-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-table tr:hover {
+            background: var(--light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-baseline {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-stress {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-amusement {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-meditation {
+            background: #fce7f3;
+            color: #831843;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 20px;
+            background: var(--light);
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .file-input-label.dragover {
+            border-color: var(--primary);
+            background: #dbeafe;
+        }
+
+        .image-preview {
+            margin-top: 12px;
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .image-preview.show {
+            display: block;
+        }
+
+        footer {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .model-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>Advanced Health AI</h1>
+                <p>Multi-Modal Stress Detection System</p>
+            </div>
+            <div id="apiStatus" class="status-badge">Connecting...</div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid">
+            <!-- Physiological Signals Prediction -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">❤️</span>
+                    Physiological Signals
+                </h2>
+                
+                <div class="model-selector">
+                    <div class="model-option selected" data-model="lstm">LSTM</div>
+                    <div class="model-option" data-model="cnn">CNN</div>
+                    <div class="model-option" data-model="hybrid">Hybrid</div>
+                </div>
+
+                <div class="form-group">
+                    <label>ECG Signal (comma-separated values)</label>
+                    <textarea id="ecgInput" placeholder="0.1, 0.2, 0.15, ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>EDA Signal (comma-separated values)</label>
+                    <textarea id="edaInput" placeholder="0.3, 0.35, 0.32, ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Temperature Signal (comma-separated values)</label>
+                    <textarea id="tempInput" placeholder="36.5, 36.6, 36.55, ..."></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="predictPhysiological()">Predict</button>
+                    <button class="btn-secondary" onclick="generateSampleSignals()">Sample Data</button>
+                </div>
+
+                <div class="result-box" id="physiologicalResult">
+                    <div id="physiologicalContent"></div>
+                </div>
+
+                <div id="physiologicalAlert"></div>
+                <div class="loading" id="physiologicalLoading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+            </div>
+
+            <!-- Facial Image Prediction -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">😊</span>
+                    Facial Expression
+                </h2>
+
+                <div class="model-selector">
+                    <div class="model-option selected" data-model="cnn">CNN</div>
+                    <div class="model-option" data-model="hybrid">Hybrid</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Facial Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="faceImage" accept="image/*" onchange="previewImage()">
+                        <label for="faceImage" class="file-input-label" id="faceLabel">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📷</div>
+                            <div>Click to upload or drag & drop</div>
+                            <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">PNG, JPG, GIF up to 10MB</div>
+                        </label>
+                    </div>
+                    <img id="imagePreview" class="image-preview" alt="Preview">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="predictFacial()">Predict</button>
+                    <button class="btn-secondary" onclick="clearFaceImage()">Clear</button>
+                </div>
+
+                <div class="result-box" id="facialResult">
+                    <div id="facialContent"></div>
+                </div>
+
+                <div id="facialAlert"></div>
+                <div class="loading" id="facialLoading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+            </div>
+
+            <!-- Multimodal Prediction -->
+            <div class="card">
+                <h2>
+                    <span class="card-icon">🔀</span>
+                    Multimodal Analysis
+                </h2>
+
+                <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Combines physiological signals + facial image for best results</p>
+
+                <div class="form-group">
+                    <label>ECG Signal</label>
+                    <textarea id="multiEcg" placeholder="0.1, 0.2, ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>EDA Signal</label>
+                    <textarea id="multiEda" placeholder="0.3, 0.35, ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Temperature Signal</label>
+                    <textarea id="multiTemp" placeholder="36.5, 36.6, ..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Facial Image</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="multiImage" accept="image/*" onchange="previewMultiImage()">
+                        <label for="multiImage" class="file-input-label" id="multiLabel">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📷</div>
+                            <div>Click to upload</div>
+                        </label>
+                    </div>
+                    <img id="multiImagePreview" class="image-preview" alt="Preview">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="predictMultimodal()">Analyze</button>
+                    <button class="btn-secondary" onclick="clearMultimodal()">Clear</button>
+                </div>
+
+                <div class="result-box" id="multimodalResult">
+                    <div id="multimodalContent"></div>
+                </div>
+
+                <div id="multimodalAlert"></div>
+                <div class="loading" id="multimodalLoading">
+                    <div class="spinner"></div>
+                    <p>Processing...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tabs -->
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('status')">System Status</button>
+                <button class="tab" onclick="switchTab('stats')">Statistics</button>
+                <button class="tab" onclick="switchTab('history')">History</button>
+            </div>
+
+            <!-- Status Tab -->
+            <div id="statusTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">API Status</div>
+                        <div class="stat-value" id="apiStatusValue">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Device</div>
+                        <div class="stat-value" id="deviceValue">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Models Loaded</div>
+                        <div class="stat-value" id="modelsLoadedValue">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">GPU Available</div>
+                        <div class="stat-value" id="gpuValue">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div id="statsTab" class="tab-content">
+                <div class="stats-grid" id="statsContent">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Predictions</div>
+                        <div class="stat-value" id="totalPredictions">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Avg Confidence</div>
+                        <div class="stat-value" id="avgConfidence">-</div>
+                    </div>
+                </div>
+                <div id="labelDistribution" style="margin-top: 20px;"></div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="historyTab" class="tab-content">
+                <div style="margin-bottom: 12px;">
+                    <button class="btn-secondary btn-small" onclick="refreshHistory()">Refresh</button>
+                    <button class="btn-danger btn-small" onclick="clearHistory()">Clear All</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Model</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Speed (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #9ca3af;">No predictions yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Advanced Health AI v1.0.0 | Real-time Multi-Modal Stress Detection | Copyright 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let selectedPhysioModel = 'lstm';
+        let selectedFacialModel = 'cnn';
+        let selectedMultiModel = 'hybrid';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkApiStatus();
+            setInterval(checkApiStatus, 30000);
+            setupModelSelectors();
+            setupDragDrop();
+        });
+
+        // Model Selector
+        function setupModelSelectors() {
+            document.querySelectorAll('.model-option').forEach(el => {
+                el.addEventListener('click', function() {
+                    const siblings = this.parentElement.querySelectorAll('.model-option');
+                    siblings.forEach(s => s.classList.remove('selected'));
+                    this.classList.add('selected');
+
+                    const model = this.dataset.model;
+                    const card = this.closest('.card');
+                    const title = card.querySelector('h2').textContent;
+
+                    if (title.includes('Physiological')) selectedPhysioModel = model;
+                    else if (title.includes('Facial')) selectedFacialModel = model;
+                    else if (title.includes('Multimodal')) selectedMultiModel = model;
+                });
+            });
+        }
+
+        // API Status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                document.getElementById('apiStatus').textContent = 'Online';
+                document.getElementById('apiStatus').className = 'status-badge healthy';
+                document.getElementById('apiStatusValue').textContent = 'Healthy';
+                document.getElementById('deviceValue').textContent = data.device.toUpperCase();
+                document.getElementById('modelsLoadedValue').textContent = data.models_loaded;
+                document.getElementById('gpuValue').textContent = data.gpu_available ? 'Yes ✓' : 'No';
+            } catch (error) {
+                document.getElementById('apiStatus').textContent = 'Offline';
+                document.getElementById('apiStatus').className = 'status-badge warning';
+                document.getElementById('apiStatusValue').textContent = 'Offline';
+                console.error('API Error:', error);
+            }
+        }
+
+        // Physiological Prediction
+        async function predictPhysiological() {
+            const ecg = parseInput(document.getElementById('ecgInput').value);
+            const eda = parseInput(document.getElementById('edaInput').value);
+            const temp = parseInput(document.getElementById('tempInput').value);
+
+            if (!ecg.length || !eda.length || !temp.length) {
+                showAlert('physiologicalAlert', 'Please fill all signal inputs', 'error');
+                return;
+            }
+
+            showLoading('physiologicalLoading', true);
+            try {
+                const response = await fetch(`${API_BASE}/predict/physiological`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ecg, eda, temperature: temp,
+                        model_type: selectedPhysioModel
+                    })
+                });
+
+                const result = await response.json();
+                displayResult('physiological', result);
+                showAlert('physiologicalAlert', 'Prediction successful!', 'success');
+            } catch (error) {
+                showAlert('physiologicalAlert', 'Prediction failed: ' + error.message, 'error');
+            } finally {
+                showLoading('physiologicalLoading', false);
+            }
+        }
+
+        // Facial Prediction
+        async function predictFacial() {
+            const file = document.getElementById('faceImage').files[0];
+            if (!file) {
+                showAlert('facialAlert', 'Please select a facial image', 'error');
+                return;
+            }
+
+            showLoading('facialLoading', true);
+            try {
+                const base64 = await fileToBase64(file);
+                const response = await fetch(`${API_BASE}/predict/facial`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image_base64: base64,
+                        model_type: selectedFacialModel
+                    })
+                });
+
+                const result = await response.json();
+                displayResult('facial', result);
+                showAlert('facialAlert', 'Prediction successful!', 'success');
+            } catch (error) {
+                showAlert('facialAlert', 'Prediction failed: ' + error.message, 'error');
+            } finally {
+                showLoading('facialLoading', false);
+            }
+        }
+
+        // Multimodal Prediction
+        async function predictMultimodal() {
+            const ecg = parseInput(document.getElementById('multiEcg').value);
+            const eda = parseInput(document.getElementById('multiEda').value);
+            const temp = parseInput(document.getElementById('multiTemp').value);
+            const file = document.getElementById('multiImage').files[0];
+
+            if (!ecg.length || !eda.length || !temp.length || !file) {
+                showAlert('multimodalAlert', 'Please fill all inputs', 'error');
+                return;
+            }
+
+            showLoading('multimodalLoading', true);
+            try {
+                const base64 = await fileToBase64(file);
+                const response = await fetch(`${API_BASE}/predict/multimodal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ecg, eda, temperature: temp,
+                        image_base64: base64,
+                        model_type: selectedMultiModel
+                    })
+                });
+
+                const result = await response.json();
+                displayResult('multimodal', result);
+                showAlert('multimodalAlert', 'Analysis successful!', 'success');
+            } catch (error) {
+                showAlert('multimodalAlert', 'Analysis failed: ' + error.message, 'error');
+            } finally {
+                showLoading('multimodalLoading', false);
+            }
+        }
+
+        // Display Results
+        function displayResult(type, result) {
+            const resultBox = document.getElementById(type + 'Result');
+            const content = document.getElementById(type + 'Content');
+
+            const stressBar = Math.round(result.confidence * 100);
+            const badgeClass = `badge-${result.label.toLowerCase()}`;
+
+            content.innerHTML = `
+                <div class="result-item">
+                    <span class="result-label">Prediction</span>
+                    <span class="badge ${badgeClass}">${result.label}</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Confidence</span>
+                    <span class="result-value">${(result.confidence * 100).toFixed(2)}%</span>
+                </div>
+                <div class="stress-indicator">
+                    <div class="stress-bar" style="width: ${stressBar}%"></div>
+                </div>
+                <div class="result-item" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                    <span class="result-label">Processing Time</span>
+                    <span class="result-value">${result.processing_time_ms.toFixed(2)}ms</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Timestamp</span>
+                    <span class="result-value" style="font-size: 12px;">${new Date(result.timestamp).toLocaleTimeString()}</span>
+                </div>
+            `;
+
+            resultBox.classList.add('show');
+            refreshHistory();
+        }
+
+        // Utility Functions
+        function parseInput(str) {
+            return str.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+        }
+
+        async function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showAlert(id, message, type) {
+            const alert = document.getElementById(id);
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            setTimeout(() => alert.textContent = '', 5000);
+        }
+
+        function showLoading(id, show) {
+            document.getElementById(id).style.display = show ? 'block' : 'none';
+        }
+
+        function previewImage() {
+            const file = document.getElementById('faceImage').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function previewMultiImage() {
+            const file = document.getElementById('multiImage').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('multiImagePreview');
+                    preview.src = e.target.result;
+                    preview.classList.add('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function clearFaceImage() {
+            document.getElementById('faceImage').value = '';
+            document.getElementById('imagePreview').classList.remove('show');
+            document.getElementById('facialResult').classList.remove('show');
+        }
+
+        function clearMultimodal() {
+            document.getElementById('multiEcg').value = '';
+            document.getElementById('multiEda').value = '';
+            document.getElementById('multiTemp').value = '';
+            document.getElementById('multiImage').value = '';
+            document.getElementById('multiImagePreview').classList.remove('show');
+            document.getElementById('multimodalResult').classList.remove('show');
+        }
+
+        function generateSampleSignals() {
+            const generateSignal = () => Array(50).fill(0).map(() => (Math.random() - 0.5).toFixed(2)).join(', ');
+            document.getElementById('ecgInput').value = generateSignal();
+            document.getElementById('edaInput').value = generateSignal();
+            document.getElementById('tempInput').value = Array(50).fill(0).map(() => (36 + Math.random()).toFixed(2)).join(', ');
+        }
+
+        function setupDragDrop() {
+            const setupDragDropForInput = (fileInputId, labelId) => {
+                const label = document.getElementById(labelId);
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    label.addEventListener(eventName, preventDefaults, false);
+                });
+
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    label.addEventListener(eventName, highlight, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    label.addEventListener(eventName, unhighlight, false);
+                });
+
+                function highlight(e) {
+                    label.classList.add('dragover');
+                }
+
+                function unhighlight(e) {
+                    label.classList.remove('dragover');
+                }
+
+                label.addEventListener('drop', handleDrop, false);
+
+                function handleDrop(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    document.getElementById(fileInputId).files = files;
+                    if (fileInputId === 'faceImage') previewImage();
+                    else if (fileInputId === 'multiImage') previewMultiImage();
+                }
+            };
+
+            setupDragDropForInput('faceImage', 'faceLabel');
+            setupDragDropForInput('multiImage', 'multiLabel');
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+
+            if (tab === 'history') refreshHistory();
+            else if (tab === 'stats') refreshStats();
+        }
+
+        async function refreshHistory() {
+            try {
+                const response = await fetch(`${API_BASE}/predictions/history?limit=10`);
+                const data = await response.json();
+                const tbody = document.getElementById('historyTableBody');
+
+                if (data.predictions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No predictions yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.predictions.map(p => `
+                    <tr>
+                        <td>${new Date(p.timestamp).toLocaleTimeString()}</td>
+                        <td style="font-weight: 600;">${p.model_type || '-'}</td>
+                        <td><span class="badge badge-${p.label.toLowerCase()}">${p.label}</span></td>
+                        <td>${(p.confidence * 100).toFixed(1)}%</td>
+                        <td>${p.processing_time_ms.toFixed(2)}ms</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error refreshing history:', error);
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${API_BASE}/predictions/stats`);
+                const data = await response.json();
+
+                if (data.message) {
+                    document.getElementById('statsContent').innerHTML = '<p>No predictions yet</p>';
+                    return;
+                }
+
+                document.getElementById('totalPredictions').textContent = data.total_predictions;
+                document.getElementById('avgConfidence').textContent = (data.avg_confidence * 100).toFixed(1) + '%';
+
+                const dist = data.label_distribution;
+                const distHtml = Object.entries(dist).map(([label, count]) => `
+                    <div class="stat-item">
+                        <div class="stat-label">${label}</div>
+                        <div class="stat-value">${count}</div>
+                    </div>
+                `).join('');
+                document.getElementById('labelDistribution').innerHTML = distHtml;
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            }
+        }
+
+        async function clearHistory() {
+            if (confirm('Clear all prediction history?')) {
+                try {
+                    await fetch(`${API_BASE}/predictions/history`, { method: 'DELETE' });
+                    refreshHistory();
+                    showAlert('statusTab', 'History cleared!', 'success');
+                } catch (error) {
+                    showAlert('statusTab', 'Failed to clear history', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

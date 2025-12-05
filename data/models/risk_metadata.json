@@ -1,0 +1,19 @@
+{
+  "features": [
+    "age",
+    "bmi",
+    "currentsmoker",
+    "cigsperday",
+    "bpmeds",
+    "prevalentstroke",
+    "prevalenthyp",
+    "diabetes",
+    "totchol",
+    "sysbp"
+  ],
+  "target": "tenyearchd",
+  "n_samples": 4091,
+  "test_accuracy": 0.8131868131868132,
+  "test_auc": 0.7014297729184189,
+  "n_estimators": 200
+}

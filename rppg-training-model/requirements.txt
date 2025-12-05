@@ -1,0 +1,13 @@
+numpy
+pandas
+scipy
+opencv-python
+mediapipe
+torch
+torchvision
+scikit-learn
+matplotlib
+seaborn
+jupyter
+yaml
+jsonschema
