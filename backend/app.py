@@ -1,7 +1,6 @@
 """
 Advanced Health AI - Production Backend
 Real-Time Multi-Modal Health Prediction System
-Built by Senior AI/ML Developer
 
 Features:
 - Real-time webcam vital signs monitoring (rPPG)
@@ -1526,9 +1525,9 @@ async def dashboard():
         <html>
             <head><title>Advanced Health AI</title></head>
             <body style="font-family: Arial; padding: 50px; text-align: center;">
-                <h1>🏥 Advanced Health AI</h1>
+                <h1> Advanced Health AI</h1>
                 <p style="font-size: 18px; color: #10b981;">✓ API is running</p>
-                <p><a href="/docs" style="color: #2563eb; font-size: 16px;">📚 View API Documentation</a></p>
+                <p><a href="/docs" style="color: #2563eb; font-size: 16px;"> View API Documentation</a></p>
                 <hr style="margin: 30px 0;">
                 <p style="color: #6b7280;">Frontend not found at: {frontend_file}</p>
                 <p style="color: #6b7280; font-size: 14px;">Place index.html in frontend/ directory</p>
@@ -1572,14 +1571,14 @@ async def startup():
     print("="*70)
     
     if loaded == 0:
-        print("\n⚠️  WARNING: NO MODELS LOADED")
+        print("\n  WARNING: NO MODELS LOADED")
         print("   Server will reject all prediction requests")
         print("\n   Place model files in:")
         print(f"   - {CHECKPOINT_DIR}")
         print(f"   - {MODELS_DIR}")
         print("\n   Then restart server")
     else:
-        print(f"\n✅ {loaded} models ready for inference!")
+        print(f"\n {loaded} models ready for inference!")
         print("   REAL MODEL INFERENCE ACTIVE")
     
     print("="*70)
@@ -1593,10 +1592,10 @@ if __name__ == "__main__":
     print("\n" + "="*70)
     print("ADVANCED HEALTH AI - SERVER")
     print("="*70)
-    print(f"🌐 API: http://localhost:8000")
-    print(f"📚 Docs: http://localhost:8000/docs")
-    print(f"🎨 Dashboard: http://localhost:8000/dashboard")
-    print(f"📹 WebSocket: ws://localhost:8000/ws/webcam")
+    print(f"API: http://localhost:8000")
+    print(f"Docs: http://localhost:8000/docs")
+    print(f"Dashboard: http://localhost:8000/dashboard")
+    print(f"WebSocket: ws://localhost:8000/ws/webcam")
     print("="*70 + "\n")
     
     uvicorn.run(
